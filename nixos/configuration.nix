@@ -30,26 +30,7 @@
   networking.networkmanager.enable = true;
 
   # Hardware
-  hardware.graphics.enable = true;
 
-  services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware.nvidia = {
-     modesetting.enable = true;
-
-     powerManagement.enable = false;
-     powerManagement.finegrained = false;
-   
-     open = false;
-     nvidiaSettings = true;
-
-     package = config.boot.kernelPackages.nvidiaPackages.stable;
-  };
-
-  hardware.nvidia.prime = {
-     nvidiaBusId = "PCI:1:0:0";
-     amdgpuBusId = "PCI:5:0:0";
-  };
 
   # Set your time zone.
   time.timeZone = "Europe/Amsterdam";
