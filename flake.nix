@@ -3,21 +3,25 @@
 
   inputs = {
     # Nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     # You can access packages and modules from different nixpkgs revs
     # at the same time. Here's an working example:
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     # Also see the 'unstable-packages' overlay at 'overlays/default.nix'.
 
-    # Home manager
-    home-manager.url = "github:nix-community/home-manager/release-23.11";
+    # Home manageri
+    home-manager.url = "github:nix-community/home-manager/release-24.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    zen-browser.url = "github:0xc000022070/zen-browser-flake";
+    zen-browser.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
     self,
     nixpkgs,
     home-manager,
+    zen-browser,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -29,6 +33,9 @@
       "aarch64-darwin"
       "x86_64-darwin"
     ];
+
+    system = "x86_64-linux";
+
     # This is a function that generates an attribute by calling a function you
     # pass to it, with each system as an argument
     forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -58,6 +65,7 @@
         modules = [
           # > Our main nixos configuration file <
           ./nixos/configuration.nix
+	  {environment.systemPackages = [ zen-browser.packages.${system}.default ];}
         ];
       };
     };
@@ -72,6 +80,7 @@
         modules = [
           # > Our main home-manager configuration file <
           ./home-manager/home.nix
+
         ];
       };
     };

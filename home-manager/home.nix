@@ -57,7 +57,12 @@
 	waybar
 	hyfetch
 	fastfetch
-	vencord
+	vesktop
+	lshw
+	brightnessctl
+	wofi
+	wl-clipboard
+	element-desktop
   ];
 
   # Enable home-manager and git

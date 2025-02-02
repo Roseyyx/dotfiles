@@ -13,9 +13,11 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
+  #boot.loader.grub.enable = true;
+  #boot.loader.grub.device = "/dev/sda";
+  #boot.loader.grub.useOSProber = true;
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -26,6 +28,28 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+
+  # Hardware
+  hardware.graphics.enable = true;
+
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.nvidia = {
+     modesetting.enable = true;
+
+     powerManagement.enable = false;
+     powerManagement.finegrained = false;
+   
+     open = false;
+     nvidiaSettings = true;
+
+     package = config.boot.kernelPackages.nvidiaPackages.stable;
+  };
+
+  hardware.nvidia.prime = {
+     nvidiaBusId = "PCI:1:0:0";
+     amdgpuBusId = "PCI:5:0:0";
+  };
 
   # Set your time zone.
   time.timeZone = "Europe/Amsterdam";
@@ -58,11 +82,24 @@
 	];
   };
 
+  fonts.packages = with pkgs; [
+  	(nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" ]; })
+	corefonts
+  ];
+
   services.getty.autologinUser = "angelicrosey";
 
   programs.hyprland = {
 	enable = true;
 	xwayland.enable = true;
+  };
+
+  security.rtkit.enable = true;
+  services.pipewire = {
+	enable = true;
+	alsa.enable = true;
+	alsa.support32Bit = true;
+	pulse.enable = true;
   };
 
   # Allow unfree packages
@@ -77,7 +114,23 @@
 	hyprland
 	wezterm
 	fish
+	pipewire
+	xfce.thunar
+	xfce.thunar-archive-plugin
+	xfce.thunar-volman
+	xfce.tumbler
+	ffmpegthumbnailer
+	gvfs
   ];
+
+  services.gvfs.enable = true;
+  programs.thunar = {
+	enable = true;
+	plugins = with pkgs.xfce; [
+		thunar-archive-plugin
+		thunar-volman
+	];
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
